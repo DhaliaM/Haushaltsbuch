@@ -1,47 +1,14 @@
-package com.homebrew.coffee.haushaltsbuch.persistence;
+package com.homebrew.coffee.haushaltsbuch.ui;
 
-import javax.persistence.*;
 import java.util.Date;
 
-@Entity
-@Table(name = "items")
-public class Items {
-
-    @Id
-    @GeneratedValue
-    private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId", referencedColumnName = "UserId")
-    private User user;
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    @Column(name = "UserId")
+public class ItemDto {
     private Long userId;
-
-    @Column(name = "Product_name")
     private String productName;
-
-    @Column(name = "Category")
     private String category;
-
-    @Column(name = "Quantity")
     private Integer quantity;
-
-    @Column(name = "Min_Quantity")
     private Integer minQuantity;
-
-    @Column(name = "PricePerQuantity")
     private Double pricePerQuantity;
-
-    @Column(name = "DateBought")
     private Date dateBought;
 
     public Long getUserId() {
@@ -98,13 +65,5 @@ public class Items {
 
     public void setDateBought(Date dateBought) {
         this.dateBought = dateBought;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
     }
 }

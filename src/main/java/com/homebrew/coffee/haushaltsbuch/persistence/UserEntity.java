@@ -6,12 +6,12 @@ import java.util.List;
 
 @Entity
 @Table(name = "user")
-public class User {
+public class UserEntity {
     @Id
     @GeneratedValue
+    @Column(name = "UserId")
     private Long userId;
 
-    @Column(name = "UserId")
     public void setUserId(Long userId) {
         this.userId = userId;
     }
@@ -20,17 +20,17 @@ public class User {
         return userId;
     }
 
-    @Column(name = "user")
+    @Column(name = "userName", unique = true, nullable = false)
     private String userName;
 
-    @Column(name="password")
+    @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "role")
+    @Column(name = "role", nullable = false)
     private String role;
 
-    @OneToMany(targetEntity = Items.class, cascade = CascadeType.ALL)
-    private List<Items> items = new ArrayList<>();
+    @OneToMany(targetEntity = ItemsEntity.class, cascade = CascadeType.ALL)
+    private List<ItemsEntity> items = new ArrayList<>();
 
     public String getUserName() {
         return userName;
@@ -56,11 +56,11 @@ public class User {
         this.role = role;
     }
 
-    public List<Items> getItems() {
+    public List<ItemsEntity> getItems() {
         return items;
     }
 
-    public void setItems(List<Items> items) {
+    public void setItems(List<ItemsEntity> items) {
         this.items = items;
     }
 }
