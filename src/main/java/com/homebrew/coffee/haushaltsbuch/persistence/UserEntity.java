@@ -12,10 +12,6 @@ public class UserEntity {
     @Column(name = "UserId")
     private Long userId;
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
     public Long getUserId() {
         return userId;
     }
@@ -29,8 +25,8 @@ public class UserEntity {
     @Column(name = "role", nullable = false)
     private String role;
 
-    @OneToMany(targetEntity = ItemsEntity.class, cascade = CascadeType.ALL)
-    private List<ItemsEntity> items = new ArrayList<>();
+    @OneToMany(targetEntity = ItemEntity.class, cascade = CascadeType.ALL)
+    private List<ItemEntity> items = new ArrayList<>();
 
     public String getUserName() {
         return userName;
@@ -56,11 +52,11 @@ public class UserEntity {
         this.role = role;
     }
 
-    public List<ItemsEntity> getItems() {
+    public List<ItemEntity> getItems() {
         return items;
     }
 
-    public void setItems(List<ItemsEntity> items) {
+    public void setItems(List<ItemEntity> items) {
         this.items = items;
     }
 }

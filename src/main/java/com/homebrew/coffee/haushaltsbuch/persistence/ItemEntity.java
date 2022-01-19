@@ -5,7 +5,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "items")
-public class ItemsEntity {
+public class ItemEntity {
 
     @Id
     @GeneratedValue
@@ -106,5 +106,20 @@ public class ItemsEntity {
 
     public Long getId() {
         return id;
+    }
+
+    @Override
+    public String toString() {
+        return "ItemsEntity{" +
+                "id=" + id +
+                ", userEntity=" + userEntity +
+                ", userId=" + userId +
+                ", productName='" + productName + '\'' +
+                ", category='" + category + '\'' +
+                ", quantity=" + quantity +
+                ", minQuantity=" + minQuantity +
+                ", pricePerQuantity=" + pricePerQuantity +
+                ", dateBought=" + dateBought +
+                '}';
     }
 }
