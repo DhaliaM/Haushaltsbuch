@@ -1,7 +1,6 @@
 package com.homebrew.coffee.haushaltsbuch.persistence;
 
 import javax.persistence.*;
-import java.util.Date;
 
 @Entity
 @Table(name = "items")
@@ -11,17 +10,17 @@ public class ItemEntity {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId", referencedColumnName = "UserId")
-    private UserEntity userEntity;
-
-    public UserEntity getUser() {
-        return userEntity;
-    }
-
-    public void setUser(UserEntity userEntity) {
-        this.userEntity = userEntity;
-    }
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "userId", referencedColumnName = "UserId")
+//    private UserEntity userEntity;
+//
+//    public UserEntity getUser() {
+//        return userEntity;
+//    }
+//
+//    public void setUser(UserEntity userEntity) {
+//        this.userEntity = userEntity;
+//    }
 
     @Column(name = "UserId")
     private Long userId;
@@ -42,7 +41,7 @@ public class ItemEntity {
     private Double pricePerQuantity;
 
     @Column(name = "DateBought")
-    private Date dateBought;
+    private String dateBought;
 
     public Long getUserId() {
         return userId;
@@ -92,11 +91,11 @@ public class ItemEntity {
         this.pricePerQuantity = pricePerQuantity;
     }
 
-    public Date getDateBought() {
+    public String getDateBought() {
         return dateBought;
     }
 
-    public void setDateBought(Date dateBought) {
+    public void setDateBought(String dateBought) {
         this.dateBought = dateBought;
     }
 
@@ -112,8 +111,8 @@ public class ItemEntity {
     public String toString() {
         return "ItemsEntity{" +
                 "id=" + id +
-                ", userEntity=" + userEntity +
-                ", userId=" + userId +
+//                ", userEntity=" + userEntity +
+//                ", userId=" + userId +
                 ", productName='" + productName + '\'' +
                 ", category='" + category + '\'' +
                 ", quantity=" + quantity +

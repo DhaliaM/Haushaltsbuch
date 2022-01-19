@@ -12,6 +12,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Date;
+
 @Controller
 public class BudgetController {
     private DatabaseService databaseService;
@@ -61,8 +66,10 @@ public class BudgetController {
         item.setCategory(itemDto.getCategory());
         item.setQuantity(itemDto.getQuantity());
         item.setPricePerQuantity(itemDto.getPricePerQuantity());
+        item.setUserId(auth.getUserId());
 
-        System.out.println(auth.getUserId());
-        System.out.println(auth.getPassword());
+        item.setDateBought(LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+
+        databaseService.addSingleItem(item);
     }
 }
