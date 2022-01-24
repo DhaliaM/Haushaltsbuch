@@ -8,14 +8,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 public class BudgetController {
@@ -67,9 +65,22 @@ public class BudgetController {
         item.setQuantity(itemDto.getQuantity());
         item.setPricePerQuantity(itemDto.getPricePerQuantity());
         item.setUserId(auth.getUserId());
-
         item.setDateBought(LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
 
         databaseService.addSingleItem(item);
+    }
+
+    @GetMapping("/home")
+    public String items(Model model){
+        MyUserDetails auth = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        model.addAttribute("itemList" , databaseService.getItemsById(auth.getUserId()));
+
+        return "home";
+    }
+    @PostMapping("/saveChange")
+    public void saveChanges(@ModelAttribute List<ItemDto> itemDto, Model model){
+        model.addAttribute("itemList",itemDto);
+
+        System.out.println(itemDto.toString());
     }
 }

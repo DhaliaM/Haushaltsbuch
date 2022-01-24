@@ -29,7 +29,11 @@ public class DatabaseService {
         }
     }
 
+    public List<ItemEntity> getItemsById(Long userId){
+        return itemsRepository.findAllById(userId);
+    }
     public void addItems(List<ItemDto> itemDtoList) {
 
     }
+
 }

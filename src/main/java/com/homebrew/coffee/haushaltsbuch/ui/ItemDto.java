@@ -66,4 +66,17 @@ public class ItemDto {
     public void setDateBought(Date dateBought) {
         this.dateBought = dateBought;
     }
+
+    @Override
+    public String toString() {
+        return "ItemDto{" +
+                "userId=" + userId +
+                ", productName='" + productName + '\'' +
+                ", category='" + category + '\'' +
+                ", quantity=" + quantity +
+                ", minQuantity=" + minQuantity +
+                ", pricePerQuantity=" + pricePerQuantity +
+                ", dateBought=" + dateBought +
+                '}';
+    }
 }
