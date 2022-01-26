@@ -1,15 +1,30 @@
-package com.homebrew.coffee.haushaltsbuch.ui;
+package com.homebrew.coffee.haushaltsbuch.persistence;
 
-import java.util.Date;
+import javax.persistence.*;
 
-public class ItemDto {
+@Entity
+@Table(name = "Product")
+public class ProductEntity {
+
+    @Id
+    @GeneratedValue
+    @Column(name = "productId")
+    private Long productId;
+
+    @Column(name = "userId")
     private Long userId;
+
+    @Column(name = "productName")
     private String productName;
+
+    @Column(name = "category")
     private String category;
-    private Integer quantity;
+
+    @Column(name = "minQuantity")
     private Integer minQuantity;
-    private Double pricePerQuantity;
-    private Date dateBought;
+
+    @Column(name="quantity")
+    private Integer quantity;
 
     public Long getUserId() {
         return userId;
@@ -35,14 +50,6 @@ public class ItemDto {
         this.category = category;
     }
 
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
-
     public Integer getMinQuantity() {
         return minQuantity;
     }
@@ -51,32 +58,27 @@ public class ItemDto {
         this.minQuantity = minQuantity;
     }
 
-    public Double getPricePerQuantity() {
-        return pricePerQuantity;
+    public Long getProductId() {
+        return productId;
     }
 
-    public void setPricePerQuantity(Double pricePerQuantity) {
-        this.pricePerQuantity = pricePerQuantity;
+    public Integer getQuantity() {
+        return quantity;
     }
 
-    public Date getDateBought() {
-        return dateBought;
-    }
-
-    public void setDateBought(Date dateBought) {
-        this.dateBought = dateBought;
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
 
     @Override
     public String toString() {
-        return "ItemDto{" +
-                "userId=" + userId +
+        return "ProductEntity{" +
+                "productId=" + productId +
+                ", userId=" + userId +
                 ", productName='" + productName + '\'' +
                 ", category='" + category + '\'' +
-                ", quantity=" + quantity +
                 ", minQuantity=" + minQuantity +
-                ", pricePerQuantity=" + pricePerQuantity +
-                ", dateBought=" + dateBought +
+                ", quantity=" + quantity +
                 '}';
     }
 }

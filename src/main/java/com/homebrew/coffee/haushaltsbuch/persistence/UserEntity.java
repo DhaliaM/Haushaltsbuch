@@ -9,7 +9,7 @@ import java.util.List;
 public class UserEntity {
     @Id
     @GeneratedValue
-    @Column(name = "UserId")
+    @Column(name = "userId")
     private Long userId;
 
     public Long getUserId() {
@@ -25,8 +25,13 @@ public class UserEntity {
     @Column(name = "role", nullable = false)
     private String role;
 
-    @OneToMany(targetEntity = ItemEntity.class, cascade = CascadeType.ALL)
-    private List<ItemEntity> items = new ArrayList<>();
+    @OneToMany(targetEntity = ProductEntity.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "userId")
+    private List<ProductEntity> products = new ArrayList<>();
+
+    @OneToMany(targetEntity = PurchaseEntity.class, cascade = CascadeType.ALL)
+    @JoinColumn(name = "userId")
+    private List<PurchaseEntity> purchases = new ArrayList<>();
 
     public String getUserName() {
         return userName;
@@ -52,11 +57,19 @@ public class UserEntity {
         this.role = role;
     }
 
-    public List<ItemEntity> getItems() {
-        return items;
+    public List<ProductEntity> getProducts() {
+        return products;
     }
 
-    public void setItems(List<ItemEntity> items) {
-        this.items = items;
+    public void setProducts(List<ProductEntity> items) {
+        this.products = items;
+    }
+
+    public List<PurchaseEntity> getPurchases() {
+        return purchases;
+    }
+
+    public void setPurchases(List<PurchaseEntity> purchases) {
+        this.purchases = purchases;
     }
 }

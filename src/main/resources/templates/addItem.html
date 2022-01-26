@@ -7,7 +7,7 @@
 <body>
 <h1 th:inline="text">Hello [[${#httpServletRequest.remoteUser}]]!</h1>
 
-<form action="#" th:action="@{/addItem}" th:object="${item}" method="POST" enctype="utf8">
+<form action="#" th:action="@{/addItem}" th:object="${product}" method="POST" enctype="utf8">
   <div >
     <label >Produktname</label>
     <input type="text" th:field="*{productName}">
@@ -18,11 +18,11 @@
   </div>
   <div >
     <label>Menge</label>
-    <input type="number" th:field="*{quantity}">
+    <input type="number" th:field="*{quantityBought}">
   </div>
   <div >
     <label>Preis pro Einheit</label>
-    <input type="number" step="0.01" min="0" value="0.00" th:field="*{pricePerQuantity}">
+    <input type="number" step="0.01" min="0" value="0.00" th:field="*{pricePerUnit}">
   </div>
 
   <button type="submit">speichern</button>
