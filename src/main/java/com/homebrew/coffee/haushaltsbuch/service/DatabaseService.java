@@ -22,7 +22,11 @@ public class DatabaseService {
     }
 
     public List<ProductEntity> getItemsById(Long userId) {
-        return productRepository.findAllById(userId);
+        return productRepository.findAllByUserId(userId);
+    }
+
+    public void addProduct(ProductEntity productEntity){
+        productRepository.save(productEntity);
     }
 
     public ProductEntity getProduct(String productName, Long userId){
@@ -39,7 +43,9 @@ public class DatabaseService {
 
     public void addPurchase(PurchaseEntity purchaseEntity) {
         purchaseRepository.save(purchaseEntity);
-
+        ProductEntity productEntity = productRepository.findByProductId(purchaseEntity.getProductId());
+        productEntity.setQuantity(productEntity.getQuantity() + purchaseEntity.getQuantityBought());
+        productRepository.save(productEntity);
     }
 
 }

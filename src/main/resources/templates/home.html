@@ -37,53 +37,53 @@
         </tbody>
     </table>
 </div>
-<p>Click <a th:href="@{/addItem}">here</a> to see a greeting.</p>
+<p>Click <a th:href="@{/addItem}">here</a> Produkt hinzufügen</p>
 
 <div class="modal fade" tabindex="-1" role="dialog" id="editModal">
-    <form id="editForm">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body" >
+    <!--    <form id="editForm">-->
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
 
-                    <div class="form-group">
-                        <label for="txtProductName">Product name</label>
-                        <input type="text" class="form-control" id="txtProductName" placeholder="Enter product name">
-                    </div>
-                    <div class="form-group">
-                        <label for="txtQuantity">Quantity</label>
-                        <input type="number" class="form-control" id="txtQuantity" placeholder="Enter quantity">
-                    </div>
-                    <div class="form-group">
-                        <label for="txtPrice">Price</label>
-                        <input type="number" class="form-control" id="txtPrice" placeholder="Enter price">
-                    </div>
+                <div class="form-group">
+                    <label for="txtProductName">Product name</label>
+                    <label class="form-control" id="txtProductName" placeholder="Enter product name"></label>
+                </div>
+                <div class="form-group">
+                    <label for="txtQuantity">Quantity</label>
+                    <input type="number" class="form-control" id="txtQuantity" placeholder="Enter quantity">
+                </div>
+                <div class="form-group">
+                    <label for="txtPrice">Price</label>
+                    <input type="number" class="form-control" id="txtPrice" placeholder="Enter price">
+                </div>
 
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary" id="btnSave">Update</button>
-                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btnSave">Update</button>
             </div>
         </div>
-    </form>
+    </div>
+    <!--    </form>-->
 </div>
 </body>
 <script th:inline="javascript">
-
+    const myModal = new bootstrap.Modal(document.getElementById('editModal'));
     const edit = document.querySelectorAll('.btnEdit');
-    console.log(edit);
 
     const functionToRunWhenClicked = function () {
-        console.log(this.parentNode.parentNode);
-        console.log(this);
+        let activeTableRow = this.parentNode.parentNode;
+        // console.log(activeTableRow.cells[0].innerText);
+        let productName = document.getElementById("txtProductName");
+        productName.innerText = activeTableRow.cells[0].innerText;
 
-        const myModal = new bootstrap.Modal(document.getElementById('editModal'));
         myModal.show()
     };
 
@@ -93,34 +93,30 @@
     }
 
     const btnPrimary = document.getElementById("btnSave");
-    btnPrimary.addEventListener('click', editModal,false);
+    btnPrimary.addEventListener('click', editModal, false);
 
     function editModal() {
 
-        let productName = document.getElementById("txtProductName").value;
+        let productName = document.getElementById("txtProductName").innerText;
         let price = document.getElementById("txtPrice").value;
         let quantity = document.getElementById("txtQuantity").value;
-        let modalData = {productName: productName,quantityBought:quantity,pricePerUnit:price};
+        let modalData = {productName: productName, quantityBought: quantity, pricePerUnit: price};
 
         let csrf = document.querySelector('meta[name="_csrf"]').content;
         let dataJson = JSON.stringify(modalData);
         let xhr = new XMLHttpRequest();
-        xhr.open("POST", "/home", true);
+        xhr.open("POST", "/home");
         xhr.setRequestHeader("x-csrf-token", csrf);
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.send(dataJson);
-        // xhr.onreadystatechange = function () {
-        //     if (this.readyState == 4 && this.status == 200) {
-        //         console.log(this.responseText);
-        //         window.location.reload(true);
-        //     }
-        //     xhr.open("POST", "/home", true);
-        //     xhr.setRequestHeader("x-csrf-token", csrf);
-        //     xhr.setRequestHeader('Content-Type', 'application/json');
-        //     xhr.send(dataJson);
-        // }
-
+        xhr.onreadystatechange = function () {
+            if (this.readyState === 4 && this.status === 200) {
+                // console.log("if readystate === 4 oder status === 200")
+                window.location.reload(true);
+            }
+        };
     }
+
 
 </script>
 </html>

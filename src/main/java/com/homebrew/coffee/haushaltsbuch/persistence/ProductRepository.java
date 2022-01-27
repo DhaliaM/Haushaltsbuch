@@ -13,6 +13,8 @@ public interface ProductRepository extends CrudRepository <ProductEntity, Long>{
     ProductEntity findByProductNameAndUserId(String productName, Long userId);
 
     @Query("SELECT n FROM ProductEntity n WHERE n.userId=?1")
-    List<ProductEntity> findAllById(Long userId);
+    List<ProductEntity> findAllByUserId(Long userId);
 
+    @Query("SELECT n from ProductEntity n where n.productId=?1")
+    ProductEntity findByProductId(Long productId);
 }

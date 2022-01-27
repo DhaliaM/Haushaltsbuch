@@ -29,7 +29,8 @@ public class BudgetController {
 
     @GetMapping("/registration")
     public String showRegistrationForm(Model model) {
-        model.addAttribute("user", new UserDto());
+        UserDto userDto = new UserDto();
+        model.addAttribute("user", userDto);
 
         return "/registration";
     }
@@ -61,14 +62,13 @@ public class BudgetController {
         MyUserDetails auth = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         model.addAttribute("product", productDto);
 
-        ProductEntity productEntity = databaseService.getProduct(productDto.getProductName(), auth.getUserId());
-        PurchaseEntity purchaseEntity = new PurchaseEntity();
-        purchaseEntity.setDateBought(LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
-        purchaseEntity.setPricePerUnit(productDto.getPricePerUnit());
-        purchaseEntity.setUserId(productEntity.getUserId());
-        purchaseEntity.setQuantityBought(productDto.getQuantityBought());
-        purchaseEntity.setProductId(productEntity.getProductId());
-        databaseService.addPurchase(purchaseEntity);
+        ProductEntity productEntity = new ProductEntity();
+        productEntity.setUserId(auth.getUserId());
+        productEntity.setProductName(productDto.getProductName());
+        productEntity.setCategory(productDto.getCategory());
+        productEntity.setMinQuantity(productDto.getMinQuantity());
+
+        databaseService.addProduct(productEntity);
     }
 
     @GetMapping("/home")
@@ -81,12 +81,10 @@ public class BudgetController {
         return "/home";
     }
 
-    @PostMapping("/saveChange")
-    public void saveChanges(@ModelAttribute List<ProductDto> listItemDto, Model model) {
-        model.addAttribute("itemList", listItemDto);
-
-        System.out.println(listItemDto.toString());
-    }
+//    @PostMapping("/saveChange")
+//    public void saveChanges(@ModelAttribute List<ProductDto> listItemDto, Model model) {
+//        model.addAttribute("itemList", listItemDto);
+//    }
 
     @PostMapping("/home")
     public void purchase(@RequestBody String jsonData) throws JsonProcessingException {
@@ -99,14 +97,10 @@ public class BudgetController {
 
         purchaseEntity.setDateBought(LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
         purchaseEntity.setPricePerUnit(purchaseDto.getPricePerUnit());
-        purchaseEntity.setUserId(productEntity.getUserId());
+        purchaseEntity.setUserId(auth.getUserId());
         purchaseEntity.setQuantityBought(purchaseDto.getQuantityBought());
-//        purchaseEntity.setProductName(productEntity.getProductName());
-//        purchaseEntity.setProductId(productEntity.getProductId());
+        purchaseEntity.setProductId(productEntity.getProductId());
 
-        System.out.println(productEntity);
         databaseService.addPurchase(purchaseEntity);
-
-
     }
 }

@@ -1,8 +1,6 @@
 package com.homebrew.coffee.haushaltsbuch.persistence;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "purchase")
@@ -66,14 +64,6 @@ public class PurchaseEntity {
     public void setPricePerUnit(Double pricePerUnit) {
         this.pricePerUnit = pricePerUnit;
     }
-
-//    public String getProductName() {
-//        return productName;
-//    }
-//
-//    public void setProductName(String productName) {
-//        this.productName = productName;
-//    }
 
     @Override
     public String toString() {

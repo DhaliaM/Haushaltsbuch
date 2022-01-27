@@ -1,15 +1,10 @@
 package com.homebrew.coffee.haushaltsbuch.ui;
 
-import java.util.Date;
-
 public class ProductDto {
     private Long userId;
     private String productName;
     private String category;
-    private Integer quantityBought;
     private Integer minQuantity;
-    private Double pricePerUnit;
-    private Date dateBought;
 
     public Long getUserId() {
         return userId;
@@ -35,14 +30,6 @@ public class ProductDto {
         this.category = category;
     }
 
-    public Integer getQuantityBought() {
-        return quantityBought;
-    }
-
-    public void setQuantityBought(Integer quantityBought) {
-        this.quantityBought = quantityBought;
-    }
-
     public Integer getMinQuantity() {
         return minQuantity;
     }
@@ -51,32 +38,13 @@ public class ProductDto {
         this.minQuantity = minQuantity;
     }
 
-    public Double getPricePerUnit() {
-        return pricePerUnit;
-    }
-
-    public void setPricePerUnit(Double pricePerUnit) {
-        this.pricePerUnit = pricePerUnit;
-    }
-
-    public Date getDateBought() {
-        return dateBought;
-    }
-
-    public void setDateBought(Date dateBought) {
-        this.dateBought = dateBought;
-    }
-
     @Override
     public String toString() {
-        return "ItemDto{" +
+        return "ProductDto{" +
                 "userId=" + userId +
                 ", productName='" + productName + '\'' +
                 ", category='" + category + '\'' +
-                ", quantity=" + quantityBought +
                 ", minQuantity=" + minQuantity +
-                ", pricePerQuantity=" + pricePerUnit +
-                ", dateBought=" + dateBought +
                 '}';
     }
 }

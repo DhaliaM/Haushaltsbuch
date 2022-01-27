@@ -1,5 +1,8 @@
 package com.homebrew.coffee.haushaltsbuch.persistence;
 
+import org.hibernate.annotations.ColumnDefault;
+import org.springframework.lang.NonNull;
+
 import javax.persistence.*;
 
 @Entity
@@ -15,6 +18,7 @@ public class ProductEntity {
     private Long userId;
 
     @Column(name = "productName")
+    @NonNull
     private String productName;
 
     @Column(name = "category")
@@ -23,8 +27,8 @@ public class ProductEntity {
     @Column(name = "minQuantity")
     private Integer minQuantity;
 
-    @Column(name="quantity")
-    private Integer quantity;
+    @Column(name = "quantity",columnDefinition = "int default 0")
+    private int quantity;
 
     public Long getUserId() {
         return userId;

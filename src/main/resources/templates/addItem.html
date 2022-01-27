@@ -17,12 +17,8 @@
     <input type="text" th:field="*{category}">
   </div>
   <div >
-    <label>Menge</label>
-    <input type="number" th:field="*{quantityBought}">
-  </div>
-  <div >
-    <label>Preis pro Einheit</label>
-    <input type="number" step="0.01" min="0" value="0.00" th:field="*{pricePerUnit}">
+    <label>Mindestmenge</label>
+    <input type="number" th:field="*{minQuantity}">
   </div>
 
   <button type="submit">speichern</button>
