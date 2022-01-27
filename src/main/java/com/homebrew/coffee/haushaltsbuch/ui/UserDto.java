@@ -1,5 +1,8 @@
 package com.homebrew.coffee.haushaltsbuch.ui;
 
+/**
+ * Ein Dto um Nutzerdaten zu übertragen.
+ */
 public class UserDto {
 
     private String userName;

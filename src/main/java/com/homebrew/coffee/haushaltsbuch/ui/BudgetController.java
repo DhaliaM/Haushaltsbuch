@@ -11,18 +11,26 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
+/**
+ * Ein Spring REST Controller.
+ *
+ * @author Dhalia
+ */
 @Controller
 public class BudgetController {
     private DatabaseService databaseService;
     private PasswordEncoder passwordEncoder;
 
-    public BudgetController(DatabaseService databaseService, PasswordEncoder passwordEncoder) {
+    public BudgetController(DatabaseService databaseService,
+                            PasswordEncoder passwordEncoder) {
         this.databaseService = databaseService;
         this.passwordEncoder = passwordEncoder;
     }
@@ -80,11 +88,6 @@ public class BudgetController {
 
         return "/home";
     }
-
-//    @PostMapping("/saveChange")
-//    public void saveChanges(@ModelAttribute List<ProductDto> listItemDto, Model model) {
-//        model.addAttribute("itemList", listItemDto);
-//    }
 
     @PostMapping("/home")
     public void purchase(@RequestBody String jsonData) throws JsonProcessingException {

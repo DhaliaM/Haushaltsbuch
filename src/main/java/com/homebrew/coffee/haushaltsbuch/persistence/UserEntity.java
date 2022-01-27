@@ -4,6 +4,9 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Entität eines Objekts für die "user" Tabelle.
+ */
 @Entity
 @Table(name = "user")
 public class UserEntity {
@@ -72,4 +75,5 @@ public class UserEntity {
     public void setPurchases(List<PurchaseEntity> purchases) {
         this.purchases = purchases;
     }
+
 }

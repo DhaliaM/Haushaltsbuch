@@ -1,5 +1,8 @@
 package com.homebrew.coffee.haushaltsbuch.ui;
 
+/**
+ * Ein Dto um Einkäufe zu übertragen.
+ */
 public class PurchaseDto {
     private Integer quantityBought;
     private Double pricePerUnit;

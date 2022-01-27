@@ -2,12 +2,15 @@ package com.homebrew.coffee.haushaltsbuch.persistence;
 
 import javax.persistence.*;
 
+/**
+ * Entität eines Objekts für die "purchase" Tabelle.
+ */
 @Entity
 @Table(name = "purchase")
 public class PurchaseEntity {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long purchaseId;
 
     @Column(name = "userId")
@@ -70,11 +73,10 @@ public class PurchaseEntity {
         return "PurchaseEntity{" +
                 "purchaseId=" + purchaseId +
                 ", userId=" + userId +
-//                ", productId=" + productId +
+                ", productId=" + productId +
                 ", dateBought='" + dateBought + '\'' +
                 ", quantityBought=" + quantityBought +
                 ", pricePerUnit=" + pricePerUnit +
-//                ", productName='" + productName + '\'' +
                 '}';
     }
 }

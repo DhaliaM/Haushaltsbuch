@@ -8,6 +8,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+/**
+ * Implementation eines Userdetailservices, welcher die userId dem Spring Security Context hinzufügt.
+ */
 @Service
 public class MyUserDetailService implements UserDetailsService {
     private UserRepository userRepository;

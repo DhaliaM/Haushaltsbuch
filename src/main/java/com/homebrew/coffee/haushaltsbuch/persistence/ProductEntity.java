@@ -1,12 +1,14 @@
 package com.homebrew.coffee.haushaltsbuch.persistence;
 
-import org.hibernate.annotations.ColumnDefault;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 
+/**
+ * Entität eines Objekts für die "product" Tabelle.
+ */
 @Entity
-@Table(name = "Product")
+@Table(name = "product")
 public class ProductEntity {
 
     @Id
@@ -27,7 +29,7 @@ public class ProductEntity {
     @Column(name = "minQuantity")
     private Integer minQuantity;
 
-    @Column(name = "quantity",columnDefinition = "int default 0")
+    @Column(name = "quantity", columnDefinition = "int default 0")
     private int quantity;
 
     public Long getUserId() {

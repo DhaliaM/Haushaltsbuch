@@ -6,6 +6,11 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * Laden der Produktdaten aus einer Datenbank mittels SpringData.
+ *
+ * @author Dhalia
+ */
 @Repository
 public interface ProductRepository extends CrudRepository <ProductEntity, Long>{
 
