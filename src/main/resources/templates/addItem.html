@@ -2,6 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
       xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
+  <meta charset="utf-8"/>
   <title>Hello World!</title>
 </head>
 <body>
@@ -23,8 +24,8 @@
 
   <button type="submit">speichern</button>
 </form>
-<form th:action="@{/logout}" method="post">
-  <input type="submit" value="Sign Out"/>
+<form th:action="@{/home}" th:method="GET">
+<button type="submit">zurück</button>
 </form>
 </body>
 </html>

@@ -17,7 +17,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Ein Spring REST Controller.
@@ -37,6 +38,7 @@ public class BudgetController {
 
     @GetMapping("/registration")
     public String showRegistrationForm(Model model) {
+
         UserDto userDto = new UserDto();
         model.addAttribute("user", userDto);
 
@@ -45,6 +47,7 @@ public class BudgetController {
 
     @PostMapping("/registration")
     public String addUser(@ModelAttribute UserDto userDto, Model model) {
+
         UserEntity user = new UserEntity();
         model.addAttribute("user", userDto);
 
@@ -59,6 +62,7 @@ public class BudgetController {
 
     @GetMapping("/addItem")
     public String addItem(Model model) {
+
         ProductDto productDto = new ProductDto();
         model.addAttribute("product", productDto);
 
@@ -67,20 +71,18 @@ public class BudgetController {
 
     @PostMapping("/addItem")
     public void addItem(@ModelAttribute ProductDto productDto, Model model) {
+
         MyUserDetails auth = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         model.addAttribute("product", productDto);
 
-        ProductEntity productEntity = new ProductEntity();
-        productEntity.setUserId(auth.getUserId());
-        productEntity.setProductName(productDto.getProductName());
-        productEntity.setCategory(productDto.getCategory());
-        productEntity.setMinQuantity(productDto.getMinQuantity());
 
-        databaseService.addProduct(productEntity);
+        productDto.setUserId(auth.getUserId());
+        databaseService.addProduct(productDto);
     }
 
     @GetMapping("/home")
     public String items(Model model) {
+
         MyUserDetails auth = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         model.addAttribute("productList", databaseService.getItemsById(auth.getUserId()));
         PurchaseDto purchaseDto = new PurchaseDto();
@@ -91,6 +93,7 @@ public class BudgetController {
 
     @PostMapping("/home")
     public void purchase(@RequestBody String jsonData) throws JsonProcessingException {
+
         MyUserDetails auth = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         ObjectMapper objectMapper = new ObjectMapper();
         PurchaseDto purchaseDto = objectMapper.readValue(jsonData, PurchaseDto.class);
@@ -98,12 +101,43 @@ public class BudgetController {
         PurchaseEntity purchaseEntity = new PurchaseEntity();
         ProductEntity productEntity = databaseService.getProduct(purchaseDto.getProductName(), auth.getUserId());
 
-        purchaseEntity.setDateBought(LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+        purchaseEntity.setDateBought(LocalDate.now());
         purchaseEntity.setPricePerUnit(purchaseDto.getPricePerUnit());
         purchaseEntity.setUserId(auth.getUserId());
         purchaseEntity.setQuantityBought(purchaseDto.getQuantityBought());
         purchaseEntity.setProductId(productEntity.getProductId());
+        purchaseEntity.setCategory(productEntity.getCategory());
 
         databaseService.addPurchase(purchaseEntity);
+    }
+
+    @GetMapping("/expenditure")
+    public String getExpenditure(Model model) {
+
+        List<PurchaseEntity> listOfPurchases = databaseService.getExpenditureByDate(16L, LocalDate.now());
+        System.out.println(listOfPurchases.toString());
+
+        List<String> listOfCategories = listOfPurchases.stream()
+                .map(PurchaseEntity::getCategory)
+                .distinct()
+                .collect(Collectors.toList());
+
+        HashMap<String, Double> sumPricePerCategory = new HashMap<>();
+        for (String category : listOfCategories) {
+            sumPricePerCategory.put(category, 0.00);
+        }
+
+        for (String category : listOfCategories) {
+            for (PurchaseEntity purchase : listOfPurchases) {
+                if (purchase.getCategory().equals(category)) {
+                    sumPricePerCategory.put(category,
+                            (sumPricePerCategory.get(category) + (purchase.getPricePerUnit() * purchase.getQuantityBought())));
+                }
+            }
+        }
+        model.addAttribute("expenditure", sumPricePerCategory);
+        System.out.println(listOfCategories);
+        System.out.println(sumPricePerCategory);
+        return "/expenditure";
     }
 }

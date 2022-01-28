@@ -1,6 +1,8 @@
 package com.homebrew.coffee.haushaltsbuch.persistence;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.util.Date;
 
 /**
  * Entität eines Objekts für die "purchase" Tabelle.
@@ -19,14 +21,18 @@ public class PurchaseEntity {
     @Column(name = "productId")
     private long productId;
 
+    @Basic
     @Column(name = "dateBought")
-    private String dateBought;
+    private LocalDate dateBought;
 
     @Column(name = "quantityBought")
     private Integer quantityBought;
 
     @Column(name = "pricePerUnit")
     private Double pricePerUnit;
+
+    @Column(name = "category")
+    private String category;
 
     public long getUserId() {
         return userId;
@@ -44,11 +50,11 @@ public class PurchaseEntity {
         this.productId = productId;
     }
 
-    public String getDateBought() {
+    public LocalDate getDateBought() {
         return dateBought;
     }
 
-    public void setDateBought(String dateBought) {
+    public void setDateBought(LocalDate dateBought) {
         this.dateBought = dateBought;
     }
 
@@ -68,6 +74,14 @@ public class PurchaseEntity {
         this.pricePerUnit = pricePerUnit;
     }
 
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
     @Override
     public String toString() {
         return "PurchaseEntity{" +
@@ -77,6 +91,7 @@ public class PurchaseEntity {
                 ", dateBought='" + dateBought + '\'' +
                 ", quantityBought=" + quantityBought +
                 ", pricePerUnit=" + pricePerUnit +
+                ", category='" + category + '\'' +
                 '}';
     }
 }
