@@ -19,6 +19,10 @@ public class UserEntity {
         return userId;
     }
 
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
     @Column(name = "userName", unique = true, nullable = false)
     private String userName;
 

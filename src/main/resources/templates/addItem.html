@@ -21,7 +21,7 @@
     <label>Mindestmenge</label>
     <input type="number" th:field="*{minQuantity}">
   </div>
-
+  <div class="alert alert-danger" role="alert" th:text="${error}" th:if="${error}"></div>
   <button type="submit">speichern</button>
 </form>
 <form th:action="@{/home}" th:method="GET">

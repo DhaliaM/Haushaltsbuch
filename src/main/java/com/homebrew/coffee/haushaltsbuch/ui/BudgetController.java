@@ -7,14 +7,19 @@ import com.homebrew.coffee.haushaltsbuch.persistence.ProductEntity;
 import com.homebrew.coffee.haushaltsbuch.persistence.PurchaseEntity;
 import com.homebrew.coffee.haushaltsbuch.persistence.UserEntity;
 import com.homebrew.coffee.haushaltsbuch.service.DatabaseService;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -62,7 +67,7 @@ public class BudgetController {
 
     @GetMapping("/addItem")
     public String addItem(Model model) {
-
+        model.addAttribute("error","");
         ProductDto productDto = new ProductDto();
         model.addAttribute("product", productDto);
 
@@ -70,14 +75,19 @@ public class BudgetController {
     }
 
     @PostMapping("/addItem")
-    public void addItem(@ModelAttribute ProductDto productDto, Model model) {
+    public String addItem(@ModelAttribute ProductDto productDto, RedirectAttributes redirAttrs, Model model) {
 
         MyUserDetails auth = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         model.addAttribute("product", productDto);
 
 
         productDto.setUserId(auth.getUserId());
-        databaseService.addProduct(productDto);
+        if(!databaseService.addProduct(productDto)){
+//            throw new ResponseStatusException(HttpStatus.CONFLICT, "Product already in Database.");
+            redirAttrs.addFlashAttribute("error", "The error XYZ occurred.");
+            return "redirect:addItem";
+        }
+        return "redirect:home";
     }
 
     @GetMapping("/home")

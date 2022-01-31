@@ -37,7 +37,10 @@ public class DatabaseService {
      */
     public void addUser(UserEntity userEntity) {
 
-        userRepository.save(userEntity);
+        if(userRepository.findByUserName(userEntity.getUserName())==null) {
+
+            userRepository.save(userEntity);
+        }
     }
 
     /**
@@ -56,8 +59,8 @@ public class DatabaseService {
      *
      * @param productDto Produkt Objekt vom Typ ProductDto
      */
-    public void addProduct(ProductDto productDto) {
-
+    public Boolean addProduct(ProductDto productDto) {
+        Boolean isAdded = false;
         if (productRepository.findByProductNameAndUserId(productDto.getProductName(), productDto.getUserId()) == null) {
             ProductEntity productEntity = new ProductEntity();
             productEntity.setProductName(productDto.getProductName());
@@ -65,7 +68,9 @@ public class DatabaseService {
             productEntity.setCategory(productDto.getCategory());
             productEntity.setMinQuantity(productDto.getMinQuantity());
             productRepository.save(productEntity);
+            isAdded = true;
         }
+        return isAdded;
     }
 
     /**
@@ -85,9 +90,9 @@ public class DatabaseService {
             productEntity.setUserId(userId);
             productRepository.save(productEntity);
         }
-        productEntity = productRepository.findByProductNameAndUserId(productName, userId);
+//        productEntity = productRepository.findByProductNameAndUserId(productName, userId);
 
-        return productEntity;
+        return productRepository.findByProductNameAndUserId(productName, userId);
     }
 
     /**

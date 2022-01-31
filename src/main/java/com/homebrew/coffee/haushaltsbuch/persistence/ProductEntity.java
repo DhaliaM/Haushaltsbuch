@@ -68,6 +68,10 @@ public class ProductEntity {
         return productId;
     }
 
+    public void setProductId(Long productId) {
+        this.productId = productId;
+    }
+
     public Integer getQuantity() {
         return quantity;
     }
