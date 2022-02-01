@@ -30,19 +30,21 @@
             <td th:text="${product.productName}"></td>
             <td th:text="${product.category}"></td>
             <td th:text="${product.quantity}"></td>
-            <td style="display: none" th:text="${product.getProductId()}"></td>
+            <!--            <td style="display: none" th:text="${product.getProductId()}"></td>-->
             <td>
-                <button type="button" class="btnEdit btn-primary" name="edit">Edit</button>
+                <button type="button" class="btnEdit btn-primary" name="edit">Einkaufen</button>
             </td>
         </tr>
         </tbody>
     </table>
 </div>
-<p>Click <a th:href="@{/addItem}">here</a> Produkt hinzufügen</p>
-<p> <a th:href="@{/expenditure}">Ausgaben</a> </p>
+<p><a th:href="@{/addItem}"> Produkt hinzufügen</a></p>
+<p><a th:href="@{/expenditure}">Ausgaben</a></p>
+<form th:action="@{/logout}" method="post">
+    <input type="submit" value="Ausloggen">
+</form>
 
 <div class="modal fade" tabindex="-1" role="dialog" id="editModal">
-    <!--    <form id="editForm">-->
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -52,18 +54,20 @@
                 </button>
             </div>
             <div class="modal-body">
-
+                <span id="Error"  style="visibility: hidden">Bitte alle Felder korrekt ausfüllen</span>
                 <div class="form-group">
-                    <label for="txtProductName">Product name</label>
+                    <label for="txtProductName">Produktname</label>
                     <label class="form-control" id="txtProductName" placeholder="Enter product name"></label>
                 </div>
                 <div class="form-group">
-                    <label for="txtQuantity">Quantity</label>
-                    <input type="number" class="form-control" id="txtQuantity" placeholder="Enter quantity">
+                    <label for="txtQuantity">Menge</label>
+                    <input type="number" required="required" min="0" class="form-control" id="txtQuantity"
+                           placeholder="Enter quantity">
                 </div>
                 <div class="form-group">
-                    <label for="txtPrice">Price</label>
-                    <input type="number" class="form-control" id="txtPrice" placeholder="Enter price">
+                    <label for="txtPrice">Preis pro Einheit</label>
+                    <input type="number" required="required" min="0" step="0.01" class="form-control" id="txtPrice"
+                           placeholder="Enter price">
                 </div>
 
             </div>
@@ -73,7 +77,6 @@
             </div>
         </div>
     </div>
-    <!--    </form>-->
 </div>
 </body>
 <script th:inline="javascript">
@@ -104,19 +107,26 @@
         let quantity = document.getElementById("txtQuantity").value;
         let modalData = {productName: productName, quantityBought: quantity, pricePerUnit: price};
 
-        let csrf = document.querySelector('meta[name="_csrf"]').content;
-        let dataJson = JSON.stringify(modalData);
-        let xhr = new XMLHttpRequest();
-        xhr.open("POST", "/home");
-        xhr.setRequestHeader("x-csrf-token", csrf);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.send(dataJson);
-        xhr.onreadystatechange = function () {
-            if (this.readyState === 4 && this.status === 200) {
-                // console.log("if readystate === 4 oder status === 200")
-                window.location.reload(true);
-            }
-        };
+        if (productName !== "" & price !== "" & quantity !== "") {
+
+            let csrf = document.querySelector('meta[name="_csrf"]').content;
+            let dataJson = JSON.stringify(modalData);
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "/home");
+            xhr.setRequestHeader("x-csrf-token", csrf);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(dataJson);
+            xhr.onreadystatechange = function () {
+                if (this.readyState === 4 && this.status === 200) {
+                    window.location.reload(true);
+                }
+            };
+        }
+        else {
+            let errorSpan = document.getElementById("Error")
+            errorSpan.style.visibility="visible";
+        }
+
     }
 
 

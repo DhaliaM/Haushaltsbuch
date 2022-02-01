@@ -3,26 +3,20 @@ package com.homebrew.coffee.haushaltsbuch.ui;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.homebrew.coffee.haushaltsbuch.configurations.MyUserDetails;
-import com.homebrew.coffee.haushaltsbuch.persistence.ProductEntity;
+import com.homebrew.coffee.haushaltsbuch.persistence.DataAlreadyExists;
 import com.homebrew.coffee.haushaltsbuch.persistence.PurchaseEntity;
-import com.homebrew.coffee.haushaltsbuch.persistence.UserEntity;
 import com.homebrew.coffee.haushaltsbuch.service.DatabaseService;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.server.ResponseStatusException;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -33,12 +27,9 @@ import java.util.stream.Collectors;
 @Controller
 public class BudgetController {
     private DatabaseService databaseService;
-    private PasswordEncoder passwordEncoder;
 
-    public BudgetController(DatabaseService databaseService,
-                            PasswordEncoder passwordEncoder) {
+    public BudgetController(DatabaseService databaseService) {
         this.databaseService = databaseService;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping("/registration")
@@ -53,21 +44,16 @@ public class BudgetController {
     @PostMapping("/registration")
     public String addUser(@ModelAttribute UserDto userDto, Model model) {
 
-        UserEntity user = new UserEntity();
         model.addAttribute("user", userDto);
 
-        // validation needed later
-        user.setUserName(userDto.getUserName());
-        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        user.setRole("user");
-        databaseService.addUser(user);
+        databaseService.addUser(userDto);
 
         return "/login";
     }
 
     @GetMapping("/addItem")
     public String addItem(Model model) {
-        model.addAttribute("error","");
+        model.addAttribute("error", "");
         ProductDto productDto = new ProductDto();
         model.addAttribute("product", productDto);
 
@@ -75,18 +61,20 @@ public class BudgetController {
     }
 
     @PostMapping("/addItem")
-    public String addItem(@ModelAttribute ProductDto productDto, RedirectAttributes redirAttrs, Model model) {
+    public String addItem(@ModelAttribute ProductDto productDto, Model model) {
 
         MyUserDetails auth = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         model.addAttribute("product", productDto);
 
-
         productDto.setUserId(auth.getUserId());
-        if(!databaseService.addProduct(productDto)){
-//            throw new ResponseStatusException(HttpStatus.CONFLICT, "Product already in Database.");
-            redirAttrs.addFlashAttribute("error", "The error XYZ occurred.");
-            return "redirect:addItem";
+        try {
+            databaseService.addProduct(productDto);
+        } catch (DataAlreadyExists e) {
+            model.addAttribute("errorMessage","Produkt existiert schon.");
+
+            return "/addItem";
         }
+
         return "redirect:home";
     }
 
@@ -108,29 +96,27 @@ public class BudgetController {
         ObjectMapper objectMapper = new ObjectMapper();
         PurchaseDto purchaseDto = objectMapper.readValue(jsonData, PurchaseDto.class);
 
-        PurchaseEntity purchaseEntity = new PurchaseEntity();
-        ProductEntity productEntity = databaseService.getProduct(purchaseDto.getProductName(), auth.getUserId());
-
-        purchaseEntity.setDateBought(LocalDate.now());
-        purchaseEntity.setPricePerUnit(purchaseDto.getPricePerUnit());
-        purchaseEntity.setUserId(auth.getUserId());
-        purchaseEntity.setQuantityBought(purchaseDto.getQuantityBought());
-        purchaseEntity.setProductId(productEntity.getProductId());
-        purchaseEntity.setCategory(productEntity.getCategory());
-
-        databaseService.addPurchase(purchaseEntity);
+        databaseService.addPurchase(purchaseDto, auth.getUserId());
     }
 
     @GetMapping("/expenditure")
     public String getExpenditure(Model model) {
 
-        List<PurchaseEntity> listOfPurchases = databaseService.getExpenditureByDate(16L, LocalDate.now());
+        MyUserDetails auth = (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<PurchaseEntity> listOfPurchases = databaseService.getExpenditureByDate(auth.getUserId(), LocalDate.now());
         System.out.println(listOfPurchases.toString());
 
         List<String> listOfCategories = listOfPurchases.stream()
                 .map(PurchaseEntity::getCategory)
                 .distinct()
                 .collect(Collectors.toList());
+
+        model.addAttribute("expenditure", sumPricePerCategory(listOfCategories,listOfPurchases));
+
+        return "/expenditure";
+    }
+
+    private HashMap sumPricePerCategory(List<String> listOfCategories, List<PurchaseEntity> listOfPurchases){
 
         HashMap<String, Double> sumPricePerCategory = new HashMap<>();
         for (String category : listOfCategories) {
@@ -145,9 +131,7 @@ public class BudgetController {
                 }
             }
         }
-        model.addAttribute("expenditure", sumPricePerCategory);
-        System.out.println(listOfCategories);
-        System.out.println(sumPricePerCategory);
-        return "/expenditure";
+
+        return sumPricePerCategory;
     }
 }

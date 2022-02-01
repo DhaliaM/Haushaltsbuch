@@ -19,7 +19,7 @@ public class ProductEntity {
     @Column(name = "userId")
     private Long userId;
 
-    @Column(name = "productName")
+    @Column(name = "productName",unique = true)
     @NonNull
     private String productName;
 

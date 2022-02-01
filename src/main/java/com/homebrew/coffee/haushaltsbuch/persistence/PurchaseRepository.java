@@ -16,5 +16,5 @@ import java.util.List;
 public interface PurchaseRepository extends CrudRepository<PurchaseEntity, Long> {
 
     @Query("SELECT n FROM PurchaseEntity n WHERE n.userId=?1 and n.dateBought BETWEEN ?2 and ?3")
-    List<PurchaseEntity> findAllBetweenDatesAndId(Long userId, LocalDate dateStart, LocalDate dateEnd);
+    List<PurchaseEntity> findAllBetweenDatesForUserId(Long userId, LocalDate dateStart, LocalDate dateEnd);
 }

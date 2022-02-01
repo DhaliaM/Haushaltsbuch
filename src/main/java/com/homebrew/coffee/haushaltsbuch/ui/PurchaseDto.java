@@ -1,11 +1,23 @@
 package com.homebrew.coffee.haushaltsbuch.ui;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
+
 /**
  * Ein Dto um Einkäufe zu übertragen.
  */
 public class PurchaseDto {
+
+    @NotEmpty
+    @Min(value=1, message = "Minimum 1")
     private Integer quantityBought;
+
+    @NotEmpty
     private Double pricePerUnit;
+
+    @NotEmpty
+    @Size(min=1, max = 200, message = "1-200 Zeichen erlaubt")
     private String productName;
 
     public Integer getQuantityBought() {

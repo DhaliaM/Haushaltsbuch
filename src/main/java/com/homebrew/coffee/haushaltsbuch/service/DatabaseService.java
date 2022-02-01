@@ -1,44 +1,50 @@
 package com.homebrew.coffee.haushaltsbuch.service;
 
 import com.homebrew.coffee.haushaltsbuch.persistence.*;
-import com.homebrew.coffee.haushaltsbuch.ui.ExpenditureDto;
 import com.homebrew.coffee.haushaltsbuch.ui.ProductDto;
+import com.homebrew.coffee.haushaltsbuch.ui.PurchaseDto;
+import com.homebrew.coffee.haushaltsbuch.ui.UserDto;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.xml.crypto.Data;
 import java.time.LocalDate;
-import java.time.temporal.ChronoField;
 import java.time.temporal.WeekFields;
-import java.util.Date;
 import java.util.List;
 
 /**
- * Ein Service um verschieden Datenbankoperationen durchzuführen.
- * Zugriff auf userRepository, ProductRepository und PurchaseRepository.
+ * Ein Service um verschiedene Datenbankoperationen durchzuführen.
+ * Zugriff auf UserRepository, ProductRepository und PurchaseRepository.
  */
 @Service
 public class DatabaseService {
     private UserRepository userRepository;
     private ProductRepository productRepository;
     private PurchaseRepository purchaseRepository;
+    private PasswordEncoder passwordEncoder;
 
     public DatabaseService(UserRepository userRepository,
                            ProductRepository productRepository,
-                           PurchaseRepository purchaseRepository) {
+                           PurchaseRepository purchaseRepository,
+                           PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.productRepository = productRepository;
         this.purchaseRepository = purchaseRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
      * Fügt einen Nutzer der Datenbank hinzu.
      *
-     * @param userEntity Nutzer Objekt vom Typ UserEntity
+     * @param userDto Nutzer Objekt vom Typ UserDto
      */
-    public void addUser(UserEntity userEntity) {
+    public void addUser(UserDto userDto) {
 
-        if(userRepository.findByUserName(userEntity.getUserName())==null) {
-
+        if (userRepository.findByUserName(userDto.getUserName()) == null) {
+            UserEntity userEntity = new UserEntity();
+            userEntity.setUserName(userDto.getUserName());
+            userEntity.setPassword(passwordEncoder.encode(userDto.getPassword()));
+            userEntity.setPassword(userEntity.getPassword());
+            userEntity.setRole("user");
             userRepository.save(userEntity);
         }
     }
@@ -59,8 +65,8 @@ public class DatabaseService {
      *
      * @param productDto Produkt Objekt vom Typ ProductDto
      */
-    public Boolean addProduct(ProductDto productDto) {
-        Boolean isAdded = false;
+    public void addProduct(ProductDto productDto) throws DataAlreadyExists {
+
         if (productRepository.findByProductNameAndUserId(productDto.getProductName(), productDto.getUserId()) == null) {
             ProductEntity productEntity = new ProductEntity();
             productEntity.setProductName(productDto.getProductName());
@@ -68,9 +74,9 @@ public class DatabaseService {
             productEntity.setCategory(productDto.getCategory());
             productEntity.setMinQuantity(productDto.getMinQuantity());
             productRepository.save(productEntity);
-            isAdded = true;
+        } else {
+            throw new DataAlreadyExists();
         }
-        return isAdded;
     }
 
     /**
@@ -83,14 +89,12 @@ public class DatabaseService {
      */
     public ProductEntity getProduct(String productName, Long userId) {
 
-        ProductEntity productEntity;
         if (productRepository.findByProductNameAndUserId(productName, userId) == null) {
-            productEntity = new ProductEntity();
+            ProductEntity productEntity = new ProductEntity();
             productEntity.setProductName(productName);
             productEntity.setUserId(userId);
             productRepository.save(productEntity);
         }
-//        productEntity = productRepository.findByProductNameAndUserId(productName, userId);
 
         return productRepository.findByProductNameAndUserId(productName, userId);
     }
@@ -98,22 +102,39 @@ public class DatabaseService {
     /**
      * Diese Methode fügt einen Einkauf zur Datenbank hinzu und erhöht die Menge des jeweiligen Produktes.
      *
-     * @param purchaseEntity Einkaufs Objekt vom Typ PurchaseEntity
+     * @param purchaseDto Einkaufs Objekt vom Typ PurchaseDto
      */
-    public void addPurchase(PurchaseEntity purchaseEntity) {
+    public void addPurchase(PurchaseDto purchaseDto, Long userID) {
 
+        ProductEntity productEntity = getProduct(purchaseDto.getProductName(), userID);
+        PurchaseEntity purchaseEntity = new PurchaseEntity();
+
+        purchaseEntity.setDateBought(LocalDate.now());
+        purchaseEntity.setPricePerUnit(purchaseDto.getPricePerUnit());
+        purchaseEntity.setUserId(userID);
+        purchaseEntity.setQuantityBought(purchaseDto.getQuantityBought());
+        purchaseEntity.setProductId(productEntity.getProductId());
+        purchaseEntity.setCategory(productEntity.getCategory());
         purchaseRepository.save(purchaseEntity);
-        ProductEntity productEntity = productRepository.findByProductId(purchaseEntity.getProductId());
+
         productEntity.setQuantity(productEntity.getQuantity() + purchaseEntity.getQuantityBought());
         productRepository.save(productEntity);
     }
 
+    /**
+     * Gibt alle Einkäufe zurück, welche innerhalb der Woche des angegebenen Datums für den jeweiligen User
+     * in der Datenbank existieren.
+     *
+     * @param userId UserId vom Typ Long
+     * @param date Datum vom Typ LocalDate
+     * @return Liste vom Typ PurchaseEntity, mit allen passenden Einträgen
+     */
     public List<PurchaseEntity> getExpenditureByDate(Long userId, LocalDate date) {
 
         LocalDate startWeek = date.with(WeekFields.ISO.getFirstDayOfWeek());
         LocalDate endWeek = startWeek.plusWeeks(1);
 
-        return purchaseRepository.findAllBetweenDatesAndId(userId,startWeek,endWeek);
+        return purchaseRepository.findAllBetweenDatesForUserId(userId, startWeek, endWeek);
     }
 
 }

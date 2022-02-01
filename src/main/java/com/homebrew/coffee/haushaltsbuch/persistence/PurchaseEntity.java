@@ -2,7 +2,6 @@ package com.homebrew.coffee.haushaltsbuch.persistence;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.Date;
 
 /**
  * Entität eines Objekts für die "purchase" Tabelle.

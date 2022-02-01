@@ -1,5 +1,8 @@
 package com.homebrew.coffee.haushaltsbuch.ui;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
+
 /**
  * Ein Dto um Produkte zu übertragen.
  */
@@ -17,6 +20,8 @@ public class ProductDto {
         this.userId = userId;
     }
 
+    @NotEmpty
+    @Size(min=1, max = 200, message = "1-200 Zeichen erlaubt")
     public String getProductName() {
         return productName;
     }
@@ -25,6 +30,8 @@ public class ProductDto {
         this.productName = productName;
     }
 
+    @NotEmpty
+    @Size(min=1, max = 200, message = "1-200 Zeichen erlaubt")
     public String getCategory() {
         return category;
     }
