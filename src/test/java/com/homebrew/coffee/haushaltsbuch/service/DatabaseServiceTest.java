@@ -12,6 +12,7 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +34,7 @@ class DatabaseServiceTest {
     private ProductDto productDto;
     private UserDto userDto;
     private PurchaseDto purchaseDto;
-    private PurchaseEntity purchaseEntity;
+    private PurchaseEntity purchaseEntity, purchaseEntityTwo;
 
     @Captor
     private ArgumentCaptor<ProductEntity> productEntityCaptor;
@@ -65,6 +66,14 @@ class DatabaseServiceTest {
         purchaseEntity.setQuantityBought(purchaseDto.getQuantityBought());
         purchaseEntity.setProductId(productEntity.getProductId());
         purchaseEntity.setCategory(productEntity.getCategory());
+
+        purchaseEntityTwo = new PurchaseEntity();
+        purchaseEntityTwo.setDateBought(LocalDate.now());
+        purchaseEntityTwo.setPricePerUnit(3.55);
+        purchaseEntityTwo.setUserId(productEntity.getUserId());
+        purchaseEntityTwo.setQuantityBought(2);
+        purchaseEntityTwo.setProductId(2L);
+        purchaseEntityTwo.setCategory(productEntity.getCategory());
 
         productDto = new ProductDto();
         productDto.setProductName("Kekse");
@@ -101,6 +110,7 @@ class DatabaseServiceTest {
     @Test
     void addUser() {
 
+        // Password Encryptor funktioniert nicht
 //        databaseService.addUser(userDto);
 //        Mockito.verify(userRepository).save(userEntityCaptor.capture());
 //        UserEntity userEntityCaptorValue = userEntityCaptor.getValue();
@@ -115,6 +125,7 @@ class DatabaseServiceTest {
         List<ProductEntity> productList = new ArrayList<>();
         productList.add(productEntity);
         Mockito.when(productRepository.findAllByUserId(1L)).thenReturn(productList);
+
         List<ProductEntity> testProducts = databaseService.getItemsById(1L);
 
         assertEquals(productEntity, testProducts.get(0));
@@ -123,28 +134,44 @@ class DatabaseServiceTest {
     @Test
     void getProduct() {
 
-        Mockito.when(productRepository.findByProductNameAndUserId("Kekse",1L)).thenReturn(productEntity);
-        ProductEntity product = databaseService.getProduct("Kekse",1L);
+        Mockito.when(productRepository.findByProductNameAndUserId("Kekse", 1L))
+                .thenReturn(productEntity);
 
-        assertEquals("Kekse",product.getProductName());
+        ProductEntity product = databaseService.getProduct("Kekse", 1L);
+
+        assertEquals("Kekse", product.getProductName());
     }
 
     @Test
     void addPurchase() {
 
-        Mockito.when(databaseService.getProduct(purchaseDto.getProductName(),1L)).thenReturn(productEntity);
-        databaseService.addPurchase(purchaseDto,1L);
+        Mockito.when(databaseService.getProduct(purchaseDto.getProductName(), 1L))
+                .thenReturn(productEntity);
+
+        databaseService.addPurchase(purchaseDto, 1L);
         Mockito.verify(purchaseRepository).save(purchaseEntityCaptor.capture());
         PurchaseEntity purchaseEntityCaptorValue = purchaseEntityCaptor.getValue();
 
-        assertEquals(purchaseDto.getPricePerUnit(),purchaseEntityCaptorValue.getPricePerUnit());
-        assertEquals(purchaseDto.getQuantityBought(),purchaseEntityCaptorValue.getQuantityBought());
+        assertEquals(purchaseDto.getPricePerUnit(), purchaseEntityCaptorValue.getPricePerUnit());
+        assertEquals(purchaseDto.getQuantityBought(), purchaseEntityCaptorValue.getQuantityBought());
     }
 
     @Test
     void getExpenditureByDate() {
 
+        List<PurchaseEntity> listOfPurchases = new ArrayList<>();
+        listOfPurchases.add(purchaseEntity);
+        listOfPurchases.add(purchaseEntityTwo);
 
+        LocalDate date = LocalDate.now();
+        LocalDate startWeek = date.with(WeekFields.ISO.getFirstDayOfWeek());
+        LocalDate endWeek = startWeek.plusWeeks(1);
+        Mockito.when(purchaseRepository.findAllBetweenDatesForUserId(1L, startWeek, endWeek))
+                .thenReturn(listOfPurchases);
 
+        List<PurchaseEntity> purchases = databaseService.getExpenditureByDate(1L, LocalDate.now());
+
+        assertEquals(purchaseEntity, purchases.get(0));
+        assertEquals(purchaseEntityTwo, purchases.get(1));
     }
 }
